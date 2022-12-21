@@ -2,8 +2,9 @@ name: Run on PR Open and sync
 
 on:
   pull_request:
-    - opened
-    - synchronize
+    types:
+      - opened
+      - synchronize
 
 jobs:
   build:
