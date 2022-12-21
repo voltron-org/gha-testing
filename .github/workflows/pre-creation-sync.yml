@@ -1,0 +1,15 @@
+name: Run on PR Open and sync
+
+on:
+  pull_request:
+    - opened
+    - synchronize
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo the Output
+        shell: bash
+        run: |
+          echo "Running the build"
