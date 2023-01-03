@@ -1,0 +1,7 @@
+##pushing the reuqired changes
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: #{NAMESPACE}#
+  labels:
+    name: #{SECRET}#
