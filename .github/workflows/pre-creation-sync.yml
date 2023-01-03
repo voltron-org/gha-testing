@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: Run on PR Open and sync
     runs-on: ubuntu-latest
     steps:
       - name: Echo the Output
