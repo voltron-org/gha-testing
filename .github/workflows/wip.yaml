@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: wow-actions/wip@v1
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
 
           # Match with PR labels. Comma separated and case insensitive labels.
           labels: 'do-not-merge', 'do not merge' , 'work in progress', 'wip', 'work-in-progress' , 'fixup'
