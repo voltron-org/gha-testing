@@ -1,0 +1,28 @@
+name: WIP
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - labeled
+      - unlabeled
+      - synchronize
+
+jobs:
+  WIP:
+    name: WIP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wow-actions/wip@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          # Match with PR labels. Comma separated and case insensitive labels.
+          labels: 'do-not-merge', 'do not merge' , 'work in progress', 'wip', 'work-in-progress' , 'fixup'
+
+          # Match with PR title. Comma separated and case insensitive keywords.
+          keywords: 'do-not-merge', 'do not merge' , 'work in progress', 'wip', 'work-in-progress' , 'fixup'
+
+          wip_description: 'work in progress'
+          ready_description: 'ready for review'
