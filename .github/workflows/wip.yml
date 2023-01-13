@@ -15,6 +15,7 @@ jobs:
       - uses: wow-actions/wip@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          labels: "'do-not-merge', 'work in progress', 'wip', 'rfc'"
+          labels: "do-not-merge, work in progress, wip, do not merge, fixup"
+          keywords: "do-not-merge, work in progress, wip, do not merge, fixup"
           wip_description: 'work in progress'
           ready_description: 'ready for review'
