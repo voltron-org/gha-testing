@@ -15,3 +15,5 @@ jobs:
       - uses: wow-actions/wip@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          wip_description: 'work in progress'
+          ready_description: 'ready for review'
