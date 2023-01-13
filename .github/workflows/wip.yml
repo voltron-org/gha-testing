@@ -15,5 +15,6 @@ jobs:
       - uses: wow-actions/wip@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          labels: "'do-not-merge', 'work in progress', 'wip', 'rfc'"
           wip_description: 'work in progress'
           ready_description: 'ready for review'
