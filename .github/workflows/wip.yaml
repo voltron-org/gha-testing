@@ -14,9 +14,10 @@ jobs:
     name: WIP
     runs-on: ubuntu-latest
     steps:
-      - uses: wow-actions/wip@v1
+      - name: WIP Action
+        uses: wow-actions/wip@v1
         with:
-          #GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
           # Match with PR labels. Comma separated and case insensitive labels.
           labels: 'do-not-merge', 'do not merge' , 'work in progress', 'wip', 'work-in-progress' , 'fixup'
           # Match with PR title. Comma separated and case insensitive keywords.
