@@ -25,13 +25,15 @@ jobs:
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
       
-      - name: Bump Version
+      - name: Bump Version and Set variables
         shell: bash
         run: |
-          jq --version
           npm -f --no-git-tag-version version patch
-          echo tag_name=$(echo "v"`cat package.json | jq -r '.version' | less`) >> $GITHUB_ENV
-          echo patch_branch_name=$(echo "patch/v"`cat package.json | jq -r '.version' | less`) >> GITHUB_ENV
+          package_version=$(cat package.json | jq -r '.version' | less)
+          tag_name="v"$package_version
+          patch_branch_name="patch/"$tag_name
+          echo tag_name >> $GITHUB_ENV
+          echo patch_branch_name >> GITHUB_ENV
 
       - name: Setup Git Config
         shell: bash
