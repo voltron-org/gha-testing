@@ -28,6 +28,7 @@ jobs:
       - name: Bump Version
         shell: bash
         run: |
+          jq --version
           npm -f --no-git-tag-version version patch
           echo tag_name=$(echo "v"`cat package.json | jq -r '.version' | less`) >> $GITHUB_ENV
           echo patch_branch_name=$(echo "patch/v"`cat package.json | jq -r '.version' | less`) >> GITHUB_ENV
