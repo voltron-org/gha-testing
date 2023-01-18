@@ -6,7 +6,7 @@ on:
       - 'patch/**'
 
 jobs:
-  Patch Branch Creation:
+  Patch-Branch:
     name: Remix Patch Branch
     runs-on: ubuntu-latest
     steps:
