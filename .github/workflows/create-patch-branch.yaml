@@ -1,0 +1,49 @@
+name: Patch Branch
+
+on:
+  push:
+    branches:
+      - 'patch/**'
+
+jobs:
+  Patch-Branch:
+    name: Remix Patch Branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: '0'
+
+      - name: Read .nvmrc from CodeBase
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+        id: nvm
+
+      - name: Use Node.js ${{ steps.nvm.outputs.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
+      
+      - name: Bump Version
+        shell: bash
+        run: |
+          npm -f --no-git-tag-version version patch
+          echo tag_name=$(echo "v"`cat package.json | jq -r '.version' | less`) >> $GITHUB_ENV
+          echo patch_branch_name=$(echo "patch/v"`cat package.json | jq -r '.version' | less`) >> GITHUB_ENV
+
+      - name: Setup Git Config
+        shell: bash
+        run: |
+          git config user.name "github-actions-bot"
+          git config user.email "<>"
+
+      - name: Create Patch branch and Publish Changes
+        shell: bash
+        run: |
+          git checkout -b ${{ env.patch_branch_name }}
+          git add package*
+          git commit -m "npm version bump ${{ env.patch_branch_name }}"
+          git tag ${{ env.tag_name }}
+          git push origin HEAD:${{ env.patch_branch_name }}
+          git push origin ${{ env.tag_name }} --tag

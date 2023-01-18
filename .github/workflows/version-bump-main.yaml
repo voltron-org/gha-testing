@@ -1,0 +1,44 @@
+name: Version Bump on main
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  Version-Bump:
+    name: Version Bump on Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: '1'
+
+      - name: Read .nvmrc from CodeBase
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+        id: nvm
+
+      - name: Use Node.js ${{ steps.nvm.outputs.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
+      
+      - name: Setup Git Config and Bump Version
+        shell: bash
+        run: |
+          git config user.name "github-actions-bot"
+          git config user.email "<>"
+          npm -f --no-git-tag-version version minor
+          echo package_version=$(echo `cat package.json | jq -r '.version' | less`) >> $GITHUB_ENV
+          echo tag_name=$(echo "v"`cat package.json | jq -r '.version' | less`) >> $GITHUB_ENV
+
+      - name: Publish Changes
+        shell: bash
+        run: |
+          git add package*
+          git commit -m "npm version bump ${{ env.package_version }}"
+          git tag ${{ env.tag_name }}
+          git push origin HEAD:${{ github.ref_name }}
+          git push origin ${{ env.tag_name }} --tag
