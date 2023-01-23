@@ -25,20 +25,61 @@ jobs:
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
       
-      - name: Setup Git Config and Bump Version
+      - name: Setup Git Config
         shell: bash
         run: |
           git config user.name "github-actions-bot"
           git config user.email "<>"
+
+      - name: Publish Changes to different branch
+        shell: bash
+        run: |
+          git checkout -b feature1
           npm -f --no-git-tag-version version minor
           echo package_version=$(echo `cat package.json | jq -r '.version' | less`) >> $GITHUB_ENV
           echo tag_name=$(echo "v"`cat package.json | jq -r '.version' | less`) >> $GITHUB_ENV
-
-      - name: Publish Changes
-        shell: bash
-        run: |
           git add package*
           git commit -m "npm version bump ${{ env.package_version }}"
           git tag ${{ env.tag_name }}
-          git push origin HEAD:${{ github.ref_name }}
+          git push origin HEAD:feature1
           git push origin ${{ env.tag_name }} --tag
+
+      - name: Create a PR to Main and merge and do everything
+        shell: bash
+        run: |
+          curl \
+          -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ghs_yKxZvyHAKMwjNpOYwEqSJvTMYoGFuF2Mpw4c"\
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/voltron-org/gha-testing/pulls \
+          -d '{"title":"Bump the NPM Package Version","body":"PR contains the changes to bump package version for Semantic Releases","head":"feature1","base":"main"}'
+
+          curl \
+          -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ghs_yKxZvyHAKMwjNpOYwEqSJvTMYoGFuF2Mpw4c"\
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/voltron-org/gha-testing/pulls/10/reviews \
+          -d '{"event":"APPROVE"}'
+
+          curl \
+          -X PUT \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ghs_yKxZvyHAKMwjNpOYwEqSJvTMYoGFuF2Mpw4c"\
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/voltron-org/gha-testing/pulls/10/merge \
+          -d '{"commit_title":"Bump Version","commit_message":"Bump Minor Version"}'
+
+          curl \
+          -X DELETE \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ghs_yKxZvyHAKMwjNpOYwEqSJvTMYoGFuF2Mpw4c"\
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/voltron-org/gha-testing/git/refs/heads/feature1
+
+
+
+
+
+          
