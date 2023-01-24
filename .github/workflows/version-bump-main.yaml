@@ -41,7 +41,7 @@ jobs:
           git add package*
           git commit -m "[skip ci]npm version bump ${{ env.package_version }}"
           git tag ${{ env.tag_name }}
-          git push origin HEAD:feature1
+          git push origin HEAD:feature1 --force
           git push origin ${{ env.tag_name }} --tag
 
   Publish-Changes:
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: 
       - Version-Bump
-      
+
     steps:
       - name: Create a PR to Main and merge and do everything
         shell: bash
