@@ -7,7 +7,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
+
 jobs:
   Version-Bump:
     name: Version Bump on Release
@@ -44,7 +44,7 @@ jobs:
           git add package*
           git commit -m "[skip ci]npm version bump ${{ env.package_version }}"
           git tag ${{ env.tag_name }}
-          git push origin HEAD:feature1
+          git push origin HEAD:feature1 --force
           git push origin ${{ env.tag_name }} --tag
 
   Publish-Changes:
