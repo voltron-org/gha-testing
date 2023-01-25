@@ -56,8 +56,8 @@ jobs:
           git push origin HEAD:feature1 --force
           git push origin ${{ env.tag_name }} --tag
       
-      outputs:
-        app_token: ${{ steps.my-app.outputs.token }}
+    outputs:
+      app_token: ${{ steps.my-app.outputs.token }}
 
   publish-changes:
     needs: version-Bump
