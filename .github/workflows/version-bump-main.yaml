@@ -33,7 +33,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
-      
+
+      - name: Bump Version and Set variables
+        shell: bash
+        run: |
+          npm -f --no-git-tag-version version minor
+          echo tag_name=$(echo "v"`cat package.json | jq -r '.version' | less`) >> $GITHUB_ENV
+
       - name: Setup Git Config
         shell: bash
         run: |
@@ -44,8 +50,6 @@ jobs:
         shell: bash
         run: |
           git checkout -b feature1
-          npm -f --no-git-tag-version version minor
-          echo tag_name=$(echo "v"`cat package.json | jq -r '.version' | less`) >> $GITHUB_ENV
           git add package*
           git commit -m "[skip ci]npm version bump ${{ env.tag_name }}"
           git tag ${{ env.tag_name }}
@@ -57,7 +61,7 @@ jobs:
         run: |
           curl -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ steps.my-app.outputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/voltron-org/gha-testing/pulls -d '{"title":"Bump the NPM Package Version","body":"PR contains the changes to bump package version for Semantic Releases","head":"feature1","base":"main"}'
 
-          curl -X PUT -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ steps.my-app.outputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/voltron-org/gha-testing/pulls/11/merge -d '{"commit_title":"[skip ci]Bump Version","commit_message":"[skip ci]Bump Minor Version"}'
+          curl -X PUT -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ steps.my-app.outputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/voltron-org/gha-testing/pulls/13/merge -d '{"commit_title":"[skip ci]Bump Version","commit_message":"[skip ci]Bump Minor Version"}'
 
           curl -X DELETE -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ steps.my-app.outputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/voltron-org/gha-testing/git/refs/heads/feature1
 
