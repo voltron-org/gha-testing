@@ -7,7 +7,7 @@ on:
 
 
 jobs:
-  version-Bump:
+  version-bump:
     name: Version Bump on Release
     runs-on: ubuntu-latest
     steps:
@@ -60,7 +60,7 @@ jobs:
       app_token: ${{ steps.my-app.outputs.token }}
 
   publish-changes:
-    needs: version-Bump
+    needs: version-bump
     name: Publish changes to main.
     runs-on: ubuntu-latest
     steps:
