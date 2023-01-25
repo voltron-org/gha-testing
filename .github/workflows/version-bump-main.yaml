@@ -1,7 +1,5 @@
 name: Version Bump on main
 
-##commenting for auto-trigger
-
 on:
   push:
     branches:
