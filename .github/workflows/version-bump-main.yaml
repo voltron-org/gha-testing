@@ -58,15 +58,31 @@ jobs:
         shell: bash
         run: |
           pr_response=$(curl --fail -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ steps.my-app.outputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/voltron-org/gha-testing/pulls -d '{"title":"Bump the NPM Package Version","body":"PR contains the changes to bump package version for Semantic Releases","head":"feature1","base":"main"}')
-          export pr_id=$(echo $pr_response | jq -r '.number' | less)
-          curl --fail -X PUT -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ steps.my-app.outputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/voltron-org/gha-testing/pulls/$pr_id/merge" -d '{"commit_title":"[skip ci]Bump Version","commit_message":"Bump Minor Version"}'
-          ref_response=$(curl --fail -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ steps.my-app.outputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/voltron-org/gha-testing/git/ref/heads/main)
-          export sha_id=$(echo $ref_response | jq -r '.object.sha' | less)
-          echo ${{env.tag_name}}
-          echo $sha_id
-          curl -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ steps.my-app.outputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/voltron-org/gha-testing/git/refs -d '{"ref":"refs/tags/${{env.tag_name}}","sha":"'"$sha_id"'"}'
-          curl --fail -X DELETE -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ steps.my-app.outputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/voltron-org/gha-testing/git/refs/heads/feature1
-
+          echo $pr_response
+          pr_err=$(echo $pr_response | jq -r '.message // empty')
+          if [[ -z "$pr_err" ]]; then
+              pr_id=$(echo $pr_response | jq -r '.number' | less)
+              echo $pr_id
+              mrg_response=$(curl --fail -X PUT -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ steps.my-app.outputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/voltron-org/gha-testing/pulls/$pr_id/merge" -d '{"commit_title":"[skip ci]Bump Version","commit_message":"Bump Minor Version"}')
+              mrg_commit=$(echo $mrg_response | jq -r '.sha' | less)
+              echo $mrg_commit
+              tag_response=$(curl -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ steps.my-app.outputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/voltron-org/gha-testing/git/refs -d '{"ref":"refs/tags/${{env.tag_name}}","sha":"'"$mrg_commit"'"}')
+              tag_err=$(echo $tag_response | jq -r '.message // empty')
+              if [[ -z "$tag_err" ]]; then
+                  echo "******"
+                  echo "Tag ${{env.tag_name}} was created"
+                  echo "******"
+                  echo "****Deleting Temporary Branch****"
+                  curl --fail -X DELETE -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ steps.my-app.outputs.token }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/voltron-org/gha-testing/git/refs/heads/feature1
+              else
+                  echo "There was an error while creating the tag"
+                  echo $tag_response
+                  exit 1
+              fi
+          else
+              echo 'There was an error while creating the Pull Request'
+              exit 1
+          fi
 
 
 
