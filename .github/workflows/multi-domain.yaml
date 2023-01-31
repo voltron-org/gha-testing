@@ -21,7 +21,14 @@ jobs:
       - name: Generate Manifests
         shell: bash
         run: |
+          cd k8s/deployment
           for i in $(echo ${{ env.domain_list }} | sed "s/,/ /g")
           do
-              echo "$i"
+            export INGRESS_FQDN_MULTIDOMAIN="www.remix.$i.qa.jf.techstyle.tech"
+            export INGRESS_NAME="remix"
+            export SERVICE_NAME="remix-develop"
+            export SERVICE_PORT="80"
+            envsubst < multi-domain-template.yaml >> multidomain-$i.yaml
           done
+          ls
+          cat multidomain-*.yaml
