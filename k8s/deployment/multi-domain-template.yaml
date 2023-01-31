@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: $INGRESS_NAME-ingress
+  namespace: $NAMESPACE
+spec:
+  rules:
+  - host: $INGRESS_FQDN_MULTIDOMAIN
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: $SERVICE_NAME-service
+          servicePort: $SERVICE_PORT

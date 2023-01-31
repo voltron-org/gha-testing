@@ -1,0 +1,27 @@
+name: Multi-Domain Deployment
+
+on:
+  push:
+    branches:
+      - 'feature/multi-domain'
+
+env:
+  domain_list: "de,co.uk,fr,ca,es,it,nl,dk,se"
+
+jobs:
+  multi-domain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: '1'
+      
+      - name: Generate Manifests
+        shell: bash
+        run: |
+          for i in $(echo ${{ env.domain_list }} | sed "s/,/ /g")
+          do
+              echo "$i"
+          done
