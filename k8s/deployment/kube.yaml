@@ -1,7 +1,17 @@
-##pushing the reuqired changes
+---
 apiVersion: v1
-kind: Namespace
+kind: Service
 metadata:
-  name: #{NAMESPACE}#
+  name: #{SERVICE_NAME}#-service
+  namespace: #{NAMESPACE}#
   labels:
-    name: #{SECRET}#
+    app: #{SERVICE_NAME}#-app
+spec:
+  type: ClusterIP
+  selector:
+    app: #{SERVICE_NAME}#-app
+  ports:
+  - port: #{SERVICE_PORT}#
+    protocol: TCP
+    targetPort: #{SERVICE_PORT}#
+    name: http
