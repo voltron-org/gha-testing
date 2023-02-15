@@ -90,10 +90,10 @@ jobs:
           url: https://api.github.com/repos/${{ github.repository }}/releases
           method: "POST"
           accept: 200,201,204
-          headers: '{ "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" }'
+          headers: '{ "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "Authorization": "Bearer ${{ steps.my-app.outputs.token }}" }'
           body: '{ "tag_name":"${{env.tag_name}}","name":"${{env.tag_name}}","body":"Description of the release","draft":false,"prerelease":false,"generate_release_notes":true, "make_latest":true }'
           timeout: 1000
-          bearer-token: ${{ steps.my-app.outputs.token }}
+          # bearer-token: ${{ steps.my-app.outputs.token }}
           log-response: true
           retries: 3
 
