@@ -1,6 +1,6 @@
 {
     "name": "ang2-conduit",
-    "version": "0.33.0",
+    "version": "0.34.0",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
